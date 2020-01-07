@@ -30,7 +30,7 @@ public class Beer {
     @UpdateTimestamp
     private OffsetDateTime lastModifiedDate;
     private String beerName;
-    private BeerStyleEnum beerStyle;
+    private String beerStyle;
     private BigDecimal price;
     private Integer quantityOnHand;
     @Column(unique = true)
