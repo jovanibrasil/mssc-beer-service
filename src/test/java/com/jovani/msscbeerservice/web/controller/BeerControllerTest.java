@@ -1,36 +1,44 @@
 package com.jovani.msscbeerservice.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jovani.msscbeerservice.services.BeerService;
 import com.jovani.msscbeerservice.web.model.BeerDto;
 import com.jovani.msscbeerservice.web.model.BeerStyleEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
 class BeerControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @Mock
+    private BeerService beerService;
+
     private ObjectMapper objectMapper;
 
     private BeerDto beerDto;
 
+    private BeerController beerController;
+
     @BeforeEach
     void setUp() {
+        this.objectMapper = new ObjectMapper();
+        MockitoAnnotations.initMocks(this);
+        this.beerController = new BeerController(this.beerService);
+        this.mockMvc = MockMvcBuilders.standaloneSetup(this.beerController).build();
         this.beerDto = BeerDto.builder()
                 .beerName("Mango Bobs")
                 .beerStyle(BeerStyleEnum.IPA)
@@ -42,6 +50,7 @@ class BeerControllerTest {
 
     @Test
     void getBeer() throws Exception {
+        when(this.beerService.getById(any())).thenReturn(this.beerDto);
         this.mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID().toString())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -50,7 +59,7 @@ class BeerControllerTest {
     @Test
     void saveBeer() throws Exception {
         String beerDtoJson = this.objectMapper.writeValueAsString(beerDto);
-
+        when(this.beerService.saveBeer(any())).thenReturn(this.beerDto);
         this.mockMvc.perform(post("/api/v1/beer")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(beerDtoJson))
@@ -60,7 +69,7 @@ class BeerControllerTest {
     @Test
     void updateBeer() throws Exception {
         String beerDtoJson = this.objectMapper.writeValueAsString(beerDto);
-
+        when(this.beerService.updateBeer(any())).thenReturn(this.beerDto);
         this.mockMvc.perform(put("/api/v1/beer")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(beerDtoJson))
