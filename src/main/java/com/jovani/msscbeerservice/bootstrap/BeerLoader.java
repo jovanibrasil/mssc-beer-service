@@ -12,6 +12,10 @@ public class BeerLoader implements CommandLineRunner {
 
     private final BeerRepository beerRepository;
 
+    public static final Long BEER_1_UPC = 0631234200036L;
+    public static final Long BEER_2_UPC = 0031234300010L;
+    public static final Long BEER_3_UPC = 0013113315210L;
+
     public BeerLoader(BeerRepository beerRepository) {
         this.beerRepository = beerRepository;
     }
@@ -28,7 +32,7 @@ public class BeerLoader implements CommandLineRunner {
                     .beerStyle("IPA")
                     .quantityToBrew(200)
                     .quantityOnHand(12)
-                    .upc(337010000001L)
+                    .upc(BEER_1_UPC)
                     .price(new BigDecimal("12.95"))
                     .build());
             this.beerRepository.save(Beer.builder()
@@ -36,7 +40,7 @@ public class BeerLoader implements CommandLineRunner {
                     .beerStyle("PALE_ALE")
                     .quantityToBrew(100)
                     .quantityOnHand(12)
-                    .upc(337010000002L)
+                    .upc(BEER_2_UPC)
                     .price(new BigDecimal("11.95"))
                     .build());
         }

@@ -6,10 +6,16 @@ import com.jovani.msscbeerservice.web.exceptions.InvalidArgumentException;
 import com.jovani.msscbeerservice.web.exceptions.NotFoundException;
 import com.jovani.msscbeerservice.web.mappers.BeerMapper;
 import com.jovani.msscbeerservice.web.model.BeerDto;
+import com.jovani.msscbeerservice.web.model.BeerPagedList;
+import com.jovani.msscbeerservice.web.model.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -46,6 +52,35 @@ public class BeerServiceImpl implements BeerService {
         return this.beerMapper.beerToBeerDto(
                 this.beerRepository.save(beer)
         );
+    }
+
+    @Override
+    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest) {
+
+        BeerPagedList beerPagedList;
+        Page<Beer> beerPage;
+
+        if(!StringUtils.isEmpty(beerName) && !StringUtils.isEmpty(beerStyle)){
+            beerPage = this.beerRepository.findAllByBeerNameAndBeerStyle(beerName, beerStyle, pageRequest);
+        } else if(!StringUtils.isEmpty(beerName) && StringUtils.isEmpty(beerStyle)){
+            beerPage = this.beerRepository.findAllByBeerName(beerName, pageRequest);
+        } else if(StringUtils.isEmpty(beerName) && !StringUtils.isEmpty(beerStyle)){
+            beerPage = this.beerRepository.findAllByBeerStyle(beerStyle, pageRequest);
+        } else {
+            beerPage = this.beerRepository.findAll(pageRequest);
+        }
+
+        beerPagedList = new BeerPagedList(beerPage
+                .getContent()
+                .stream()
+                .map(beerMapper::beerToBeerDto)
+                .collect(Collectors.toList()),
+                PageRequest
+                    .of(beerPage.getPageable().getPageNumber(),
+                            beerPage.getPageable().getPageSize()),
+                beerPage.getTotalElements());
+        return beerPagedList;
+
     }
 
 }
