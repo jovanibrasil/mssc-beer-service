@@ -25,17 +25,20 @@ public class BeerController {
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = "25") Integer pageSize,
             @RequestParam(value = "beerName", required = false) String beerName,
-            @RequestParam(value = "beerStyle", required = false) BeerStyleEnum beerStyle
+            @RequestParam(value = "beerStyle", required = false) BeerStyleEnum beerStyle,
+            @RequestParam(value = "showInventoryOnHand", required = false, defaultValue = "false") Boolean showInventory
             ){
         BeerPagedList beerPagedList = this.beerService
-                .listBeers(beerName, beerStyle, PageRequest.of(pageNumber, pageSize));
+                .listBeers(beerName, beerStyle, PageRequest.of(pageNumber, pageSize), showInventory);
         return new ResponseEntity<>(beerPagedList, HttpStatus.OK);
     }
 
     @GetMapping("/{beerId}")
-    public ResponseEntity<BeerDto> getBeer(@PathVariable("beerId") UUID beerId){
+    public ResponseEntity<BeerDto> getBeer(
+            @PathVariable("beerId") UUID beerId,
+            @RequestParam(value = "showInventoryOnHand", required = false, defaultValue = "false") Boolean showInventory){
         return ResponseEntity.ok(
-                this.beerService.getById(beerId)
+                this.beerService.getById(beerId, showInventory)
         );
     }
 

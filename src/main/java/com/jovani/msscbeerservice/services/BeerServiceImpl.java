@@ -25,10 +25,10 @@ public class BeerServiceImpl implements BeerService {
     private final BeerMapper beerMapper;
 
     @Override
-    public BeerDto getById(UUID uuid) {
-        return this.beerMapper.beerToBeerDto(
-                this.beerRepository.findById(uuid).orElseThrow(NotFoundException::new)
-        );
+    public BeerDto getById(UUID uuid, Boolean showInventory) {
+        Beer beer = this.beerRepository.findById(uuid).orElseThrow(NotFoundException::new);
+        if(showInventory) return this.beerMapper.beerToBeerDtoWithInventory(beer);
+        return this.beerMapper.beerToBeerDto(beer);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest) {
+    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventory) {
 
         BeerPagedList beerPagedList;
         Page<Beer> beerPage;
@@ -73,7 +73,7 @@ public class BeerServiceImpl implements BeerService {
         beerPagedList = new BeerPagedList(beerPage
                 .getContent()
                 .stream()
-                .map(beerMapper::beerToBeerDto)
+                .map(showInventory ? beerMapper::beerToBeerDtoWithInventory : beerMapper::beerToBeerDto)
                 .collect(Collectors.toList()),
                 PageRequest
                     .of(beerPage.getPageable().getPageNumber(),

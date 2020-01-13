@@ -31,7 +31,6 @@ public class BeerLoader implements CommandLineRunner {
                     .beerName("Mango Bobs")
                     .beerStyle("IPA")
                     .quantityToBrew(200)
-                    .quantityOnHand(12)
                     .upc(BEER_1_UPC)
                     .price(new BigDecimal("12.95"))
                     .build());
@@ -39,7 +38,6 @@ public class BeerLoader implements CommandLineRunner {
                     .beerName("Galaxy Cat")
                     .beerStyle("PALE_ALE")
                     .quantityToBrew(100)
-                    .quantityOnHand(12)
                     .upc(BEER_2_UPC)
                     .price(new BigDecimal("11.95"))
                     .build());

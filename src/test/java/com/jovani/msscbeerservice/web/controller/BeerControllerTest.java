@@ -50,7 +50,7 @@ class BeerControllerTest {
 
     @Test
     void getBeer() throws Exception {
-        when(this.beerService.getById(any())).thenReturn(this.beerDto);
+        when(this.beerService.getById(any(), any())).thenReturn(this.beerDto);
         this.mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID().toString())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
