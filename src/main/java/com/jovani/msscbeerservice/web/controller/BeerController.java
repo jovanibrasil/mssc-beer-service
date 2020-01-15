@@ -5,6 +5,7 @@ import com.jovani.msscbeerservice.web.model.BeerDto;
 import com.jovani.msscbeerservice.web.model.BeerPagedList;
 import com.jovani.msscbeerservice.web.model.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,10 @@ public class BeerController {
             @RequestParam(value = "pageSize", required = false, defaultValue = "25") Integer pageSize,
             @RequestParam(value = "beerName", required = false) String beerName,
             @RequestParam(value = "beerStyle", required = false) BeerStyleEnum beerStyle,
-            @RequestParam(value = "showInventoryOnHand", required = false, defaultValue = "false") Boolean showInventory
+            @RequestParam(value = "showInventoryOnHand", required = false, defaultValue = "false") Boolean showInventoryOnHand
             ){
         BeerPagedList beerPagedList = this.beerService
-                .listBeers(beerName, beerStyle, PageRequest.of(pageNumber, pageSize), showInventory);
+                .listBeers(beerName, beerStyle, PageRequest.of(pageNumber, pageSize), showInventoryOnHand);
         return new ResponseEntity<>(beerPagedList, HttpStatus.OK);
     }
 

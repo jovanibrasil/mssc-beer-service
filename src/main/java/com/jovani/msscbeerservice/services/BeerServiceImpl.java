@@ -9,6 +9,8 @@ import com.jovani.msscbeerservice.web.model.BeerDto;
 import com.jovani.msscbeerservice.web.model.BeerPagedList;
 import com.jovani.msscbeerservice.web.model.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class BeerServiceImpl implements BeerService {
@@ -24,10 +27,11 @@ public class BeerServiceImpl implements BeerService {
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
 
+    @Cacheable(cacheNames = "beerCache", key = "#beerId", condition = "#showInventoryOnHand == false")
     @Override
-    public BeerDto getById(UUID uuid, Boolean showInventory) {
+    public BeerDto getById(UUID uuid, Boolean showInventoryOnHand) {
         Beer beer = this.beerRepository.findById(uuid).orElseThrow(NotFoundException::new);
-        if(showInventory) return this.beerMapper.beerToBeerDtoWithInventory(beer);
+        if(showInventoryOnHand) return this.beerMapper.beerToBeerDtoWithInventory(beer);
         return this.beerMapper.beerToBeerDto(beer);
     }
 
@@ -54,8 +58,11 @@ public class BeerServiceImpl implements BeerService {
         );
     }
 
+    @Cacheable(cacheNames = "beerListCache", condition = "#showInventoryOnHand == false")
     @Override
-    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventory) {
+    public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventoryOnHand) {
+
+        log.info("Listing beers ...");
 
         BeerPagedList beerPagedList;
         Page<Beer> beerPage;
@@ -73,7 +80,7 @@ public class BeerServiceImpl implements BeerService {
         beerPagedList = new BeerPagedList(beerPage
                 .getContent()
                 .stream()
-                .map(showInventory ? beerMapper::beerToBeerDtoWithInventory : beerMapper::beerToBeerDto)
+                .map(showInventoryOnHand ? beerMapper::beerToBeerDtoWithInventory : beerMapper::beerToBeerDto)
                 .collect(Collectors.toList()),
                 PageRequest
                     .of(beerPage.getPageable().getPageNumber(),
