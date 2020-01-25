@@ -13,4 +13,5 @@ public interface BeerService {
     BeerDto saveBeer(BeerDto beerDto);
     BeerDto updateBeer(BeerDto beerDto);
     BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest of, Boolean showInventory);
+    BeerDto getByUpc(Long upc, Boolean showInventory);
 }

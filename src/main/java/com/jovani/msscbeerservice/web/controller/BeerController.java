@@ -5,7 +5,6 @@ import com.jovani.msscbeerservice.web.model.BeerDto;
 import com.jovani.msscbeerservice.web.model.BeerPagedList;
 import com.jovani.msscbeerservice.web.model.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +33,20 @@ public class BeerController {
         return new ResponseEntity<>(beerPagedList, HttpStatus.OK);
     }
 
-    @GetMapping("/{beerId}")
+    @GetMapping("/{uuid:[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}}")
     public ResponseEntity<BeerDto> getBeer(
-            @PathVariable("beerId") UUID beerId,
-            @RequestParam(value = "showInventoryOnHand", required = false, defaultValue = "false") Boolean showInventory){
+            @RequestParam(value = "showInventoryOnHand", required = false, defaultValue = "false") Boolean showInventory,
+            @PathVariable UUID uuid){
         return ResponseEntity.ok(
-                this.beerService.getById(beerId, showInventory)
+                this.beerService.getById(uuid, showInventory)
         );
+    }
+
+    @GetMapping("/{upc:[0-9]+}")
+    public ResponseEntity<BeerDto> getBeer(
+            @RequestParam(value = "showInventoryOnHand", required = false, defaultValue = "false") Boolean showInventory,
+            @PathVariable Long upc){
+        return ResponseEntity.ok(this.beerService.getByUpc(upc, showInventory));
     }
 
     @PostMapping
