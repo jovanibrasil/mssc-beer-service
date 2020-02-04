@@ -1,17 +1,15 @@
 package com.jovani.msscbeerservice.events;
 
 import com.jovani.msscbeerservice.web.model.BeerDto;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class BeerEvent {
 
     public static final long serialVersionUID = -616846359104522108L;
-
-    private final BeerDto beerDto;
+    private BeerDto beerDto;
 
 }

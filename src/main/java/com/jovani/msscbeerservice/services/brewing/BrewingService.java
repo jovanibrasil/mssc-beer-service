@@ -1,4 +1,4 @@
-package com.jovani.msscbeerservice.services;
+package com.jovani.msscbeerservice.services.brewing;
 
 import com.jovani.msscbeerservice.config.JmsConfig;
 import com.jovani.msscbeerservice.domain.Beer;
